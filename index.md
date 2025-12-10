@@ -5,15 +5,15 @@ layout: default
 
 [Academics](academics.md) · [Projects](projects.md) · [Blog](blog.md)
 
-# Your Name
+# Crystal Zhou
 
-Short welcome note about who you are and what you do. Update this intro and the links above to suit your style.
+Welcome to my personal website! I am a current Master of Engineering student at Cornell Tech, majoring in Computer Science. Before this, I completed my Bachelor's degree at the University of Waterloo.
 
 ## Snapshot
 
-- Focus areas: _replace with your domains or interests._
-- Currently: _what you are working on right now._
-- Based in: _your city or timezone._
+- Focus areas: ML infra, distributed optimization, open-source development
+- Currently: grinding on KVCache and inference system
+- Based in: New York, United States
 
 ## Where to go next
 
