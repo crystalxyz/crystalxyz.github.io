@@ -20,3 +20,8 @@ Showcase the work you want people to see first. Link to repos, demos, or writeup
 - **Area or stack** — list relevant projects, libraries, or responsibilities.
 - **Area or stack** — note strengths, experiments, or upcoming ideas.
 - **Area or stack** — link to repos or posts that show your approach.
+
+## Contact
+
+- Email: [xz957@cornell.edu](mailto:xz957@cornell.edu)
+- LinkedIn: [linkedin.com/in/crystalxyz](https://www.linkedin.com/in/crystalxyz)

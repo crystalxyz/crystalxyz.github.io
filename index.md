@@ -1,24 +1,30 @@
 ---
-title: Home
+title: Crystal Zhou's World
 layout: default
 ---
 
 [Academics](academics.md) · [Projects](projects.md) · [Blog](blog.md)
 
-# Crystal Zhou
+# About me
 
-Welcome to my personal website! I am a current Master of Engineering student at Cornell Tech, majoring in Computer Science. Before this, I completed my Bachelor's degree at the University of Waterloo.
+Welcome to my personal website!
+
+I am Crystal Zhou (周晓玥). I am a current Master of Engineering student at [Cornell Tech](https://tech.cornell.edu/), majoring in Computer Science. Before this, I completed my Bachelor's degree in CS at the [University of Waterloo](https://uwaterloo.ca/).
 
 ## Snapshot
 
-- Focus areas: ML infra, distributed optimization, open-source development
+- Focus areas: ML infra, optimization, distributed systems, database, open-source development
 - Currently: grinding on KVCache and inference system
 - Based in: New York, United States
 
 ## Where to go next
 
-- [Academic experience](academics.md): degrees, research, teaching.
-- [Highlighted projects](projects.md): work you want to showcase.
-- [Writing & blog](blog.md): posts hosted here or links elsewhere.
+- [Academic experience](academics.md): still constructing...
+- [Highlighted projects](projects.md): still constructing...
+- [Writing & blog](blog.md): my recent thoughts about research and life.
 
-_Edit this page in Markdown—no HTML required. GitHub Pages will build it automatically._
+## Contact
+
+- Email: [xz957@cornell.edu](mailto:xz957@cornell.edu)
+- LinkedIn: [linkedin.com/in/crystalxyz](https://www.linkedin.com/in/crystalxyz)
+
