@@ -25,6 +25,7 @@ I am Crystal Zhou (周晓玥). I am a current Master of Engineering student at [
 
 ## Contact
 
-- Email: [xz957@cornell.edu](mailto:xz957@cornell.edu)
-- LinkedIn: [linkedin.com/in/crystalxyz](https://www.linkedin.com/in/crystalxyz)
+- Email: [xz957@cornell.edu](mailto:xz957@cornell.edu
+- GitHub: [github.com/crystalxyz](https://github.com/crystalxyz)
+- LinkedIn: [linkedin.com/in/crystal-xyz](https://www.linkedin.com/in/crystal-xyz/)
 
