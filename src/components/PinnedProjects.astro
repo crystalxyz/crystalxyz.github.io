@@ -1,0 +1,176 @@
+---
+import { PINNED_PROJECTS } from "@/consts"
+
+type RepoData = {
+  description: string | null
+  language: string | null
+  stargazers_count: number
+  forks_count: number
+  html_url: string
+  fork: boolean
+  parent?: { full_name: string; html_url: string }
+}
+
+// GitHub's language dot colors (subset).
+const LANG_COLORS: Record<string, string> = {
+  Python: "#3572A5",
+  TypeScript: "#3178c6",
+  JavaScript: "#f1e05a",
+  Rust: "#dea584",
+  Go: "#00ADD8",
+  "C++": "#f34b7d",
+  C: "#555555",
+  Shell: "#89e051",
+  HTML: "#e34c26",
+  MDX: "#fcb32c",
+  "Jupyter Notebook": "#DA5B0B",
+}
+
+// Fetched at build time, no auth. Falls back to the curated description if the
+// GitHub API is unavailable or rate-limited.
+const projects = await Promise.all(
+  PINNED_PROJECTS.map(async ({ repo, description }) => {
+    const [owner, name] = repo.split("/")
+    let data: Partial<RepoData> = {}
+    try {
+      const res = await fetch(`https://api.github.com/repos/${repo}`, {
+        headers: { Accept: "application/vnd.github+json" },
+      })
+      if (res.ok) data = (await res.json()) as RepoData
+    } catch {
+      /* keep fallback */
+    }
+    return {
+      owner,
+      name,
+      url: data.html_url ?? `https://github.com/${repo}`,
+      description: data.description?.trim() || description || "",
+      language: data.language ?? null,
+      stars: data.stargazers_count ?? 0,
+      forks: data.forks_count ?? 0,
+      forkedFrom: data.fork ? (data.parent?.full_name ?? null) : null,
+    }
+  }),
+)
+---
+
+<project-grid>
+  {
+    projects.map((p) => (
+      <article>
+        <a class="title" href={p.url} target="_blank" rel="noopener noreferrer">
+          <svg
+            viewBox="0 0 16 16"
+            width="1em"
+            height="1em"
+            aria-hidden="true"
+            fill="currentColor"
+          >
+            <path d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z" />
+          </svg>
+          <span>{p.name}</span>
+        </a>
+
+        {p.description && <p>{p.description}</p>}
+
+        <project-meta>
+          {p.language && (
+            <span class="lang">
+              <i style={`background-color: ${LANG_COLORS[p.language] ?? "var(--muted-foreground)"}`} />
+              {p.language}
+            </span>
+          )}
+          {p.stars > 0 && <span>★ {p.stars.toLocaleString()}</span>}
+          {p.forkedFrom && <span class="forked">forked from {p.forkedFrom}</span>}
+        </project-meta>
+
+        <a class="cta" href={p.url} target="_blank" rel="noopener noreferrer">
+          View on GitHub →
+        </a>
+      </article>
+    ))
+  }
+</project-grid>
+
+<style>
+  project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-s);
+  }
+
+  article {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs);
+    height: 100%;
+    padding: var(--space-m);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    background-color: color-mix(in oklab, var(--gray-2) 55%, transparent);
+    transition:
+      border-color 0.15s ease,
+      background-color 0.15s ease;
+  }
+
+  article:hover {
+    border-color: var(--accent);
+    background-color: color-mix(in oklab, var(--ember-3) 45%, transparent);
+  }
+
+  .title {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    font-size: var(--step-1);
+    font-weight: var(--font-weight-medium);
+    color: var(--foreground);
+    text-decoration: none;
+
+    svg {
+      color: var(--muted-foreground);
+    }
+  }
+
+  p {
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+  }
+
+  project-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    margin-block-start: auto;
+    padding-block-start: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--muted-foreground);
+
+    .lang {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-3xs);
+
+      i {
+        display: block;
+        inline-size: 0.7em;
+        block-size: 0.7em;
+        border-radius: var(--radius-full);
+      }
+    }
+
+    .forked {
+      color: color-mix(in oklab, var(--muted-foreground) 70%, transparent);
+    }
+  }
+
+  .cta {
+    font-size: var(--step--1);
+    font-weight: var(--font-weight-medium);
+    color: var(--accent);
+    --underline: color-mix(in oklab, var(--accent) 45%, transparent);
+    text-decoration-color: var(--underline);
+  }
+</style>

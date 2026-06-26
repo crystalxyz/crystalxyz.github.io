@@ -1,29 +1,46 @@
 # crystalxyz.github.io
 
-Static personal site built with GitHub Pages (Markdown + Cayman theme) with dedicated pages for academics, highlighted projects, and blog posts.
+## Tech
 
-## Structure
-- `index.md` — landing page that links to your key sections.
-- `academics.md` — outline degrees, research, and teaching.
-- `projects.md` — spotlight projects with links and notes.
-- `blog.md` — list posts or link to external writing.
-- `_config.yml` — sets the site title, description, and Cayman theme.
-- `Gemfile` — pins the GitHub Pages/Jekyll tooling for local preview.
-- `.gitignore` — ignores Jekyll build artifacts.
-- `assets/css/style.scss` — overrides the Cayman theme with a brighter gradient style.
+- **Astro** (static output) — no UI/CSS framework, native CSS design system
+- **Bun** as the package manager / runner
+- Content collections for **blog**, **projects**, and **authors**
+- Build-time **GitHub contributions calendar** (no API key)
+- Deployed to **GitHub Pages** via GitHub Actions
 
-## Usage
-Edit the Markdown files directly (no HTML required) and push to GitHub Pages. Replace placeholder text with your own details and links; GitHub Pages will build the site automatically using the chosen theme.
+## Develop
 
-### Local preview with GitHub Pages / Jekyll
-1) Ensure Ruby and Bundler are installed (macOS: `brew install ruby` then `gem install bundler`).  
-2) From this folder run `bundle install` (once) to install the `github-pages` gem set.  
-3) Start the dev server: `bundle exec jekyll serve`.  
-4) Open the URL shown (typically http://127.0.0.1:4000) to preview.
+```bash
+bun install        # install dependencies
+bun dev            # local dev server (http://localhost:4321)
+bun run build      # production build to dist/
+bun run preview    # preview the production build
+```
 
-### Styling
-- The Cayman theme handles layout; `assets/css/style.scss` imports the theme and layers custom gradients, fonts, and colors.  
-- Tweak the `:root` color variables, backgrounds, and type settings in that file to further tune the vibe.
+## Editing content
 
-### Deploy on GitHub Pages
-Push to the repository and enable GitHub Pages in repo settings, targeting the default branch (root). GitHub will build the site using the same `github-pages` configuration.
+- **Site config / nav / socials:** `src/consts.ts`
+- **Theme & accent colors:** `src/styles/color.css` (`--ember-*`, `--accent`)
+- **Homepage (hero + GitHub calendar + latest posts):** `src/pages/index.astro`
+- **About page:** `src/pages/about.astro`
+- **Author profile:** `src/content/authors/crystal.md`
+- **Blog posts:** `src/content/blog/<slug>/index.md`
+- **Projects:** `src/content/projects/<slug>.md`
+
+Blog post frontmatter requires `title`, `description`, `date`, and `authors`
+(a reference to a file in `src/content/authors/`). Projects require `name`,
+`description`, and `link`.
+
+## Deploy
+
+Pushing to `main` triggers `.github/workflows/deploy.yml`, which builds with Bun
+and publishes `dist/` to GitHub Pages.
+
+> **One-time setup:** in the repo, go to **Settings → Pages → Build and
+> deployment → Source** and select **GitHub Actions** (the repo previously used
+> the legacy Jekyll branch build).
+
+## Credits
+
+Template: [astro-erudite](https://github.com/jktrn/astro-erudite) by
+[jktrn / enscribe](https://enscribe.dev) (MIT — see `LICENSE`).

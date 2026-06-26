@@ -1,0 +1,295 @@
+---
+import BlogCard from "@/components/BlogCard.astro"
+import GithubCalendar from "@/components/GithubCalendar.astro"
+import MetaPage from "@/components/MetaPage.astro"
+import PinnedProjects from "@/components/PinnedProjects.astro"
+import SocialIcons from "@/components/SocialIcons.astro"
+import Layout from "@/layouts/Layout.astro"
+import { GITHUB_USERNAME, SOCIALS } from "@/consts"
+import { getPosts } from "@/lib/content"
+
+const posts = (await getPosts()).slice(0, 3)
+---
+
+<Layout wide>
+  <MetaPage slot="head" />
+
+  <home-top>
+    <home-hero>
+      <p class="kicker">Hi, I'm</p>
+      <h1>Crystal (Xiaoyue) Zhou</h1>
+      <p class="tagline">
+        Software Engineer @ Jane Street · Harbor maintainer · ML researcher
+      </p>
+      <prose-content>
+        <p>
+          I'm a software engineer and systems researcher who likes digging into
+          the hard parts of making machine-learning systems fast. I earned my
+          M.Eng. in Computer Science at Cornell Tech and my B.CS at the
+          University of Waterloo, and these days I maintain
+          <strong>Harbor</strong>, an evaluation harness for agentic systems,
+          along with KV-cache and LLM inference.
+        </p>
+        <p>
+          I've been lucky to collaborate with the
+          <a href="https://www.tbench.ai/">Terminal-Bench team</a> at Stanford
+          on the Harbor adapters project, and with
+          <a href="https://ugupta.com/index.html">Prof. Gupta</a> at Cornell on
+          profiling the efficiency of agentic systems. Above all, I believe in
+          the power of open source.
+        </p>
+        <p>
+          Outside of work, you'll find me volunteering at animal shelters,
+          skiing, hiking, and seeking out good food wherever I go.
+        </p>
+      </prose-content>
+      <home-links>
+        <SocialIcons links={SOCIALS} />
+        <a class="cta" href="/about">More about me →</a>
+      </home-links>
+    </home-hero>
+
+    <home-aside>
+      <div class="avatar" role="img" aria-label="Crystal Zhou"></div>
+      <article class="card">
+      <card-label>Currently</card-label>
+      <p>
+        Core maintainer of <a
+          href={`https://github.com/harbor-framework/harbor`}
+          target="_blank"
+          rel="noopener noreferrer">Harbor</a
+        >, an evaluation harness for agentic terminal tasks. Doing independent
+        research on multimodal model inference optimizations.
+      </p>
+      <chip-row>
+        <span>Agentic Systems</span>
+        <span>ML Infra</span>
+        <span>Distributed Systems</span>
+        <span>Databases</span>
+        <span>Open Source</span>
+      </chip-row>
+      </article>
+    </home-aside>
+  </home-top>
+
+  <bento-grid>
+    <section class="span-6">
+      <card-head class="bare">
+        <h2>My projects</h2>
+        <a
+          href={`https://github.com/${GITHUB_USERNAME}?tab=repositories`}
+          target="_blank"
+          rel="noopener noreferrer">View all →</a
+        >
+      </card-head>
+      <PinnedProjects />
+    </section>
+
+    <article class="card span-6">
+      <card-head>
+        <h2>GitHub activity</h2>
+        <a
+          href={`https://github.com/${GITHUB_USERNAME}`}
+          target="_blank"
+          rel="noopener noreferrer">@{GITHUB_USERNAME}</a
+        >
+      </card-head>
+      <GithubCalendar username={GITHUB_USERNAME} />
+    </article>
+
+    {
+      posts.length > 0 && (
+        <article class="card span-6">
+          <card-head>
+            <h2>Latest posts</h2>
+            <a href="/blog">See all posts →</a>
+          </card-head>
+          <ul class="posts">
+            {posts.map((post) => (
+              <BlogCard post={post} />
+            ))}
+          </ul>
+        </article>
+      )
+    }
+  </bento-grid>
+</Layout>
+
+<style>
+  /* Hero + "Currently" sit side by side on desktop, stack on mobile. */
+  home-top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    gap: var(--space-m);
+    align-items: start;
+
+    @media (width >= 64rem) {
+      margin-block-start: -0.2em;
+    }
+
+    @media (width < 48rem) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  home-aside {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  .avatar {
+    align-self: flex-end;
+    inline-size: 8rem;
+    block-size: 8rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--border);
+    background-image: url("/images/photo.jpg");
+    background-repeat: no-repeat;
+    background-size: 300%;
+    background-position: 47% 34%;
+  }
+
+  home-hero {
+    display: block;
+
+    .kicker {
+      font-size: var(--step--1);
+      font-weight: var(--font-weight-medium);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin-block: var(--space-3xs) var(--space-2xs);
+      font-size: clamp(2rem, 1.5rem + 2.2vw, 2.75rem);
+      line-height: calc(var(--leading-offset) + 1em);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground);
+
+      span {
+        color: var(--muted-foreground);
+        font-weight: var(--font-weight-normal);
+      }
+    }
+
+    .tagline {
+      font-size: var(--step-1);
+      color: var(--muted-foreground);
+    }
+
+    prose-content {
+      margin-block-start: var(--space-s);
+      max-inline-size: var(--measure);
+    }
+  }
+
+  home-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-s);
+    margin-block-start: var(--space-m);
+
+    .cta {
+      font-size: var(--step--1);
+      font-weight: var(--font-weight-medium);
+      color: var(--accent);
+      text-decoration-color: color-mix(in oklab, var(--accent) 45%, transparent);
+    }
+  }
+
+  /* --- Bento grid --- */
+  bento-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: var(--space-s);
+    margin-block-start: var(--space-xl);
+  }
+
+  .span-6 {
+    grid-column: span 6;
+  }
+
+  @media (width < 48rem) {
+    bento-grid {
+      grid-template-columns: 1fr;
+    }
+    .span-6 {
+      grid-column: auto;
+    }
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-m);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-2xl);
+    background-color: color-mix(in oklab, var(--gray-2) 55%, transparent);
+  }
+
+  card-label {
+    display: block;
+    margin-block-end: var(--space-2xs);
+    font-size: var(--step--1);
+    font-weight: var(--font-weight-medium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    margin-block-end: var(--space-s);
+
+    h2 {
+      font-size: var(--step-1);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground);
+    }
+
+    a {
+      font-size: var(--step--1);
+      color: var(--accent);
+      text-decoration-color: color-mix(in oklab, var(--accent) 45%, transparent);
+    }
+  }
+
+  .card p {
+    color: var(--muted-foreground);
+    text-wrap: pretty;
+  }
+
+  .card p a {
+    color: var(--accent);
+    text-decoration-color: color-mix(in oklab, var(--accent) 45%, transparent);
+  }
+
+  chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+    margin-block-start: var(--space-s);
+
+    span {
+      padding-inline: var(--space-2xs);
+      padding-block: 0.15em;
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+      background-color: color-mix(in oklab, var(--muted) 60%, transparent);
+      border-radius: var(--radius-full);
+    }
+  }
+
+  ul.posts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+</style>

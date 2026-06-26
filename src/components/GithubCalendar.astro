@@ -1,0 +1,181 @@
+---
+type Day = { date: string; count: number; level: number }
+
+type Props = { username: string }
+const { username } = Astro.props
+
+let days: Day[] = []
+let total = 0
+let ok = false
+
+// Fetched at build time — no API key, no client JS. Wrapped so a flaky API
+// never breaks the build (falls back to a static contributions image).
+try {
+  const res = await fetch(
+    `https://github-contributions-api.jogruber.de/v4/${username}?y=last`,
+  )
+  if (res.ok) {
+    const data = (await res.json()) as { contributions?: Day[] }
+    days = data.contributions ?? []
+    total = days.reduce((sum, d) => sum + d.count, 0)
+    ok = days.length > 0
+  }
+} catch {
+  ok = false
+}
+
+// Pad the first week so weekdays line up (Sunday at the top, like GitHub).
+const firstWeekday = ok
+  ? new Date(`${days[0].date}T00:00:00Z`).getUTCDay()
+  : 0
+const cells: (Day | null)[] = [
+  ...Array.from({ length: firstWeekday }, () => null),
+  ...days,
+]
+const columns = Math.max(1, Math.ceil(cells.length / 7))
+
+// Subtle ember used by the static fallback image (hex without the leading #).
+const EMBER_HEX = "f76b15"
+---
+
+<gh-calendar>
+  {
+    ok ? (
+      <>
+        <calendar-grid
+          role="img"
+          aria-label={`${total} GitHub contributions in the last year`}
+          style={`aspect-ratio: ${columns} / 7`}
+        >
+          {cells.map((d) =>
+            d === null ? (
+              <calendar-cell data-empty />
+            ) : (
+              <calendar-cell
+                data-level={d.level}
+                title={`${d.count} contribution${d.count === 1 ? "" : "s"} on ${d.date}`}
+              />
+            ),
+          )}
+        </calendar-grid>
+        <calendar-legend>
+          <span>
+            <a
+              href={`https://github.com/${username}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {total.toLocaleString()} contributions
+            </a>{" "}
+            in the last year
+          </span>
+          <legend-scale>
+            <span>Less</span>
+            <i data-level="0" />
+            <i data-level="1" />
+            <i data-level="2" />
+            <i data-level="3" />
+            <i data-level="4" />
+            <span>More</span>
+          </legend-scale>
+        </calendar-legend>
+      </>
+    ) : (
+      <a
+        href={`https://github.com/${username}`}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src={`https://ghchart.rshah.org/${EMBER_HEX}/${username}`}
+          alt={`${username}'s GitHub contribution graph`}
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
+    )
+  }
+</gh-calendar>
+
+<style>
+  gh-calendar {
+    display: block;
+  }
+
+  calendar-grid {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-rows: repeat(7, 1fr);
+    grid-auto-columns: 1fr;
+    gap: clamp(2px, 0.4vw, 3px);
+    width: 100%;
+  }
+
+  calendar-cell {
+    border-radius: 2px;
+    background-color: var(--cell, var(--gray-4));
+  }
+
+  calendar-cell[data-empty] {
+    background-color: transparent;
+  }
+
+  :is(calendar-cell, legend-scale i)[data-level="0"] {
+    --cell: var(--gray-4);
+  }
+  :is(calendar-cell, legend-scale i)[data-level="1"] {
+    --cell: var(--ember-5);
+  }
+  :is(calendar-cell, legend-scale i)[data-level="2"] {
+    --cell: var(--ember-7);
+  }
+  :is(calendar-cell, legend-scale i)[data-level="3"] {
+    --cell: var(--ember-9);
+  }
+  :is(calendar-cell, legend-scale i)[data-level="4"] {
+    --cell: var(--ember-11);
+  }
+
+  calendar-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2xs);
+    margin-block-start: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--muted-foreground);
+
+    a {
+      --underline: color-mix(in oklab, var(--accent) 45%, transparent);
+      color: var(--accent);
+    }
+  }
+
+  legend-scale {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+
+    i {
+      display: block;
+      inline-size: 0.7em;
+      block-size: 0.7em;
+      border-radius: 2px;
+      background-color: var(--cell, var(--gray-4));
+    }
+
+    span:first-child {
+      margin-inline-end: var(--space-3xs);
+    }
+
+    span:last-child {
+      margin-inline-start: var(--space-3xs);
+    }
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+  }
+</style>
