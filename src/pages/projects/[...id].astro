@@ -1,0 +1,139 @@
+---
+import MetaPage from "@/components/MetaPage.astro"
+import Layout from "@/layouts/Layout.astro"
+import { formatDate } from "@/lib/utils"
+import { Image } from "astro:assets"
+import { getCollection, render, type CollectionEntry } from "astro:content"
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects")
+  return projects.map((project) => ({
+    params: { id: project.id },
+    props: { project },
+  }))
+}
+
+type Props = { project: CollectionEntry<"projects"> }
+
+const { project } = Astro.props
+const { name, description, link, tags, image, startDate, endDate } =
+  project.data
+const { Content } = await render(project)
+
+const crumbs = [{ label: name, href: `/projects/${project.id}` }]
+---
+
+<Layout crumbs={crumbs}>
+  <MetaPage slot="head" title={name} description={description} />
+  <article>
+    <header>
+      <h1>{name}</h1>
+      <project-meta>
+        {startDate && (
+            <project-dates>
+              <time datetime={startDate.toISOString()}>
+                {formatDate(startDate)}
+              </time>
+              {" → "}
+              {endDate ? (
+                <time datetime={endDate.toISOString()}>
+                  {formatDate(endDate)}
+                </time>
+              ) : (
+                "Present"
+              )}
+            </project-dates>
+          )}
+        <a class="repo" href={link} target="_blank" rel="noopener noreferrer">
+          {new URL(link).hostname}
+        </a>
+      </project-meta>
+      <p>{description}</p>
+      {tags && tags.length > 0 && (
+          <project-tags>
+            {tags.map((tag) => (
+              <span>{tag}</span>
+            ))}
+          </project-tags>
+        )}
+    </header>
+    {image && (
+        <project-banner>
+          <Image src={image} alt={name} width={1200} height={630} />
+        </project-banner>
+      )}
+    <prose-content>
+      <Content />
+    </prose-content>
+  </article>
+</Layout>
+
+<style>
+  header {
+    margin-block-end: var(--space-m);
+
+    h1 {
+      font-size: var(--step-3);
+      line-height: calc(var(--leading-offset) + 1em);
+      font-weight: var(--font-weight-medium);
+    }
+
+    project-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-3xs);
+      margin-block-start: var(--space-3xs);
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+
+      project-dates {
+        display: flex;
+        align-items: center;
+        gap: var(--space-3xs);
+      }
+
+      .repo {
+        color: var(--accent);
+      }
+
+      project-dates ~ .repo::before {
+        content: "·";
+        margin-inline-end: var(--space-3xs);
+        color: var(--muted-foreground);
+      }
+    }
+
+    > p {
+      margin-block-start: var(--space-2xs);
+      font-size: var(--step--1);
+      color: var(--muted-foreground);
+    }
+
+    project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-3xs);
+      margin-block-start: var(--space-2xs);
+      font-size: var(--step--1);
+
+      span {
+        padding-inline: var(--space-2xs);
+        color: var(--muted-foreground);
+        background-color: color-mix(in oklab, var(--muted) 50%, transparent);
+        border-radius: var(--radius-full);
+      }
+    }
+  }
+
+  project-banner {
+    display: block;
+    margin-block-end: var(--space-m);
+
+    :global(img) {
+      inline-size: 100%;
+      block-size: auto;
+      border-radius: var(--radius-2xl);
+    }
+  }
+</style>

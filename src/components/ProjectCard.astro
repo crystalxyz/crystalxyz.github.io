@@ -9,22 +9,17 @@ type Props = { project: CollectionEntry<"projects"> }
 const { project } = Astro.props
 const { name, description, link, tags, image, startDate, endDate } =
   project.data
+const href = `/projects/${project.id}`
 ---
 
 <li>
   {image && (
-      <a
-        href={link}
-        target="_blank"
-        rel="noopener noreferrer"
-        tabindex="-1"
-        aria-hidden="true"
-      >
+      <a href={href} tabindex="-1" aria-hidden="true">
         <Image src={image} alt="" width={640} height={336} />
       </a>
     )}
   <entry-info>
-    <a href={link} target="_blank" rel="noopener noreferrer">{name}</a>
+    <a href={href}>{name}</a>
     <entry-meta>
       {startDate && (
           <project-dates>
@@ -41,10 +36,10 @@ const { name, description, link, tags, image, startDate, endDate } =
             )}
           </project-dates>
         )}
-      <project-link>
+      <a class="project-link" href={link} target="_blank" rel="noopener noreferrer">
         <ExternalIcon aria-hidden="true" />
         {new URL(link).hostname}
-      </project-link>
+      </a>
     </entry-meta>
     <p>{description}</p>
     {tags && tags.length > 0 && (
@@ -98,11 +93,16 @@ const { name, description, link, tags, image, startDate, endDate } =
           gap: var(--space-3xs);
         }
 
-        project-link {
+        .project-link {
           display: flex;
           align-items: center;
           gap: var(--space-3xs);
           color: color-mix(in oklab, var(--muted-foreground) 50%, transparent);
+          text-decoration-line: none;
+
+          &:hover {
+            color: var(--muted-foreground);
+          }
 
           svg {
             inline-size: 1em;
@@ -110,7 +110,7 @@ const { name, description, link, tags, image, startDate, endDate } =
           }
         }
 
-        project-dates ~ project-link::before {
+        project-dates ~ .project-link::before {
           content: "·";
           color: var(--muted-foreground);
         }
