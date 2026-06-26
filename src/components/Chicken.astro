@@ -1,0 +1,54 @@
+---
+// A wandering Stardew chicken that paces along the bottom of the viewport,
+// flipping to face its direction of travel. Purely decorative.
+---
+
+<chicken-walker aria-hidden="true">
+  <img class="chick" src="/images/chicken-stardew-valley.gif" alt="" />
+</chicken-walker>
+
+<style>
+  chicken-walker {
+    position: fixed;
+    inset-block-end: 0.75rem;
+    inset-inline-start: 0;
+    inline-size: 56px;
+    z-index: 30;
+    pointer-events: none;
+    will-change: transform;
+    animation: chicken-walk 120s linear infinite;
+  }
+
+  .chick {
+    display: block;
+    inline-size: 56px;
+    block-size: auto;
+    image-rendering: pixelated;
+  }
+
+  /* Pace right to the far edge (facing right), flip, pace back (facing left). */
+  /* The gif faces left by default, so scaleX(-1) faces it right. */
+  @keyframes chicken-walk {
+    0% {
+      transform: translateX(0) scaleX(-1);
+    }
+    48% {
+      transform: translateX(calc(100vw - 56px)) scaleX(-1);
+    }
+    50% {
+      transform: translateX(calc(100vw - 56px)) scaleX(1);
+    }
+    98% {
+      transform: translateX(0) scaleX(1);
+    }
+    100% {
+      transform: translateX(0) scaleX(-1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    chicken-walker {
+      animation: none;
+    }
+  }
+</style>

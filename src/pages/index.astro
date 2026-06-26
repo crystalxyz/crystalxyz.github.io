@@ -7,12 +7,18 @@ import SocialIcons from "@/components/SocialIcons.astro"
 import Layout from "@/layouts/Layout.astro"
 import { GITHUB_USERNAME, SOCIALS } from "@/consts"
 import { getPosts } from "@/lib/content"
+import Chicken from "@/components/Chicken.astro"
 
 const posts = (await getPosts()).slice(0, 3)
 ---
 
 <Layout wide>
   <MetaPage slot="head" />
+
+  <side-decor class="left" aria-hidden="true"></side-decor>
+  <side-decor class="right" aria-hidden="true"></side-decor>
+
+  <Chicken />
 
   <home-top>
     <home-hero>
@@ -26,9 +32,7 @@ const posts = (await getPosts()).slice(0, 3)
           I'm a software engineer and systems researcher who likes digging into
           the hard parts of making machine-learning systems fast. I earned my
           M.Eng. in Computer Science at Cornell Tech and my B.CS at the
-          University of Waterloo, and these days I maintain
-          <strong>Harbor</strong>, an evaluation harness for agentic systems,
-          along with KV-cache and LLM inference.
+          University of Waterloo.
         </p>
         <p>
           I've been lucky to collaborate with the
@@ -58,8 +62,9 @@ const posts = (await getPosts()).slice(0, 3)
           href={`https://github.com/harbor-framework/harbor`}
           target="_blank"
           rel="noopener noreferrer">Harbor</a
-        >, an evaluation harness for agentic terminal tasks. Doing independent
-        research on multimodal model inference optimizations.
+        >, an evaluation harness for agentic terminal tasks.</p>
+        
+      <p>Independent researcher on multimodal model inference optimizations.</p>
       </p>
       <chip-row>
         <span>Agentic Systems</span>
@@ -116,6 +121,40 @@ const posts = (await getPosts()).slice(0, 3)
 </Layout>
 
 <style>
+  /* Decorative scenic panels in the wide left/right page margins.
+     Drop whistler.jpg and la.jpg into public/images/ to populate them. */
+  side-decor {
+    position: fixed;
+    inset-block: 0;
+    inline-size: min(14rem, max(0px, calc((100vw - var(--grid-max-width)) / 2)));
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  side-decor.left {
+    inset-inline-start: 0;
+    background-image: url("/images/whistler.jpg");
+    -webkit-mask-image: linear-gradient(to right, #000 90%, transparent);
+    mask-image: linear-gradient(to right, #000 90%, transparent);
+  }
+
+  side-decor.right {
+    inset-inline-end: 0;
+    background-image: url("/images/la.jpg");
+    -webkit-mask-image: linear-gradient(to left, #000 90%, transparent);
+    mask-image: linear-gradient(to left, #000 90%, transparent);
+  }
+
+  /* Only show when the side margins are wide enough to look intentional. */
+  @media (width < 85rem) {
+    side-decor {
+      display: none;
+    }
+  }
+
   /* Hero + "Currently" sit side by side on desktop, stack on mobile. */
   home-top {
     display: grid;
@@ -139,9 +178,9 @@ const posts = (await getPosts()).slice(0, 3)
   }
 
   .avatar {
-    align-self: flex-end;
-    inline-size: 8rem;
-    block-size: 8rem;
+    align-self: center;
+    inline-size: 12rem;
+    block-size: 12rem;
     border-radius: var(--radius-full);
     border: 1px solid var(--border);
     background-image: url("/images/photo.jpg");
